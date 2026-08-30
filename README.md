@@ -6,49 +6,47 @@
 
 **免费 · 开源 · 本地运行 · Apple Silicon 原生支持**
 
-通过仍然存在的点赞、评论等互动记录，尝试恢复已经删除的 QQ 空间说说；同时把说说、日志、相册、视频、留言等内容完整备份到 Mac 本地。
+通过仍然存在的点赞、评论等互动记录，尝试恢复已经删除的 QQ 空间说说；同时把说说、日志、相册、视频、留言等内容备份到 Mac 本地。
 
-[![macOS](https://img.shields.io/badge/macOS-12%2B-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases)
-[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases)
+[![macOS](https://img.shields.io/badge/macOS-12%2B-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)
+[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![Build](https://github.com/Cliffer1999/qzone-archiver-macos/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Cliffer1999/qzone-archiver-macos/actions/workflows/build-and-release.yml)
 
-### ⬇️ 直接下载
+## ⬇️ 直接下载最新版
 
-[![Download Apple Silicon](https://img.shields.io/badge/Download-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-arm64.dmg)
+[![Download Apple Silicon](https://img.shields.io/badge/Download-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest/download/QZoneArchiver-4.0.0-mac-arm64.dmg)
 &nbsp;
-[![Download Intel Mac](https://img.shields.io/badge/Download-Intel%20Mac-1f6feb?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-x64.dmg)
+[![Download Intel Mac](https://img.shields.io/badge/Download-Intel%20Mac-1f6feb?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest/download/QZoneArchiver-4.0.0-mac-x64.dmg)
 
-**不知道选哪个？** 2020 年以后大多数 Mac（M1 / M2 / M3 / M4）选左边。
+**2020 年以后使用 M1 / M2 / M3 / M4 的 Mac，请下载 Apple Silicon 版。**
 
-[查看全部版本与 ZIP 下载](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)
+[查看 Release 与 ZIP 下载](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)
 
 </div>
 
 ---
 
-## ✨ 它最特别的地方
+## ✨ 它能做什么？
 
 很多人以为 QQ 空间说说删除以后就彻底消失了。
 
-实际上，如果那条说说曾经留下过 **点赞、评论、回复等互动记录**，QQ 空间的相关互动数据中有时仍然保留着可用于重建的信息。
+如果一条旧说说当年留下过 **点赞、评论、回复等互动记录**，QQ 空间相关互动数据中有时仍然残留可以用于重建的信息。
 
-QZone Archiver 会尝试从这些残留互动记录里找回能够恢复的历史说说。
+QZone Archiver 会尝试从这些仍然可访问的数据中恢复能够重建的历史说说。
 
-> **不是“万能恢复”。** 没有任何互动痕迹、服务器端也不再保留数据的内容无法凭空恢复。但如果旧说说曾经有人点赞或评论，非常值得试一次。
-
-### 一个你可能会遇到的场景
+> **不是万能恢复。** 如果服务器端已经没有任何可访问的残留数据，工具无法凭空还原内容。但曾经有人点赞或评论过的旧说说，非常值得尝试。
 
 ```text
-2014 年发了一条说说
-       ↓
-几年后自己删除了
-       ↓
-当年朋友点过赞 / 留过评论
-       ↓
-互动通知仍有残留记录
-       ↓
-QZone Archiver 尝试重建这条已删除说说
+旧说说曾经发布
+      ↓
+后来被删除
+      ↓
+当年存在点赞 / 评论 / 回复
+      ↓
+互动数据仍有残留
+      ↓
+尝试重建已删除说说
 ```
 
 ---
@@ -71,116 +69,107 @@ QZone Archiver 尝试重建这条已删除说说
 | Apple Silicon | ✅ |
 | Intel Mac | ✅ |
 
-备份完成后可以直接在本地查看，不需要一直连接 QQ 空间。
+所有备份保存在你自己选择的本地目录中。
 
 ---
 
-## 🧭 三步使用
+## 🧭 三步开始
 
 ### 1. 下载
 
-- Apple Silicon（M1 / M2 / M3 / M4）：[`arm64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-arm64.dmg)
-- Intel Mac：[`x64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-x64.dmg)
+- Apple Silicon（M1 / M2 / M3 / M4）：[`arm64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest/download/QZoneArchiver-4.0.0-mac-arm64.dmg)
+- Intel Mac：[`x64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest/download/QZoneArchiver-4.0.0-mac-x64.dmg)
 
 ### 2. 登录自己的 QQ 空间
 
-打开 App 后点击登录，在内嵌 QQ 空间窗口中完成扫码 / 验证。
+打开 App，点击登录，在应用内嵌的 QQ 空间页面完成扫码或验证。
 
-登录 Cookie 由 Electron 的本地 session 保存，本项目没有增加远程服务器。
+### 3. 选择内容并开始备份
 
-### 3. 选择要备份的内容
-
-选择说说、相册、日志等模块并开始备份。完成后可以直接进入本地档案浏览器查看历史内容。
+选择说说、相册、日志等模块。完成后可直接进入本地档案浏览器查看。
 
 ---
 
-## 🔐 你的数据去哪了？
+## 🔐 隐私
 
-这个问题比功能更重要。
+macOS 移植层没有新增服务器，也不会把你的 QQ Cookie 或备份上传到本项目维护者的服务器。
 
-**macOS 移植层不会把你的 QQ Cookie 或备份上传到我的服务器，因为这个项目没有自己的服务器。**
-
-- QQ 登录发生在应用内嵌的 QQ 空间页面
+- QQ 登录发生在应用内嵌页面
 - 登录状态保存在本机 Electron session
-- 导出文件保存在你自己选择的 Mac 文件夹
-- 本项目没有新增 analytics / telemetry
-- 不要把 `p_skey`、`skey`、Cookie 或私人备份上传到 GitHub
+- 导出内容保存在你选择的 Mac 文件夹
+- 没有新增 analytics / telemetry 服务
+- 请勿公开上传 `p_skey`、`skey`、Cookie 或私人备份
 
-更多说明见 [`docs/PRIVACY.md`](docs/PRIVACY.md)。
-
----
-
-## 🍎 为什么要做 macOS 版？
-
-上游 [`salt-fishes/qzone-archiver`](https://github.com/salt-fishes/qzone-archiver) v4.0.0 已经提供完整的 Electron 桌面应用，但官方桌面安装包仅发布 Windows 版本。
-
-它的核心采集、恢复和导出逻辑本身大部分是跨平台的，所以这个项目专门完成 macOS 适配：
-
-- `.dmg` / `.zip` 打包
-- Apple Silicon `arm64`
-- Intel `x64`
-- macOS 原生 App / Edit / Window 菜单
-- `⌘Q / ⌘C / ⌘V / ⌘A` 等标准快捷键
-- Dock 再次点击恢复窗口
-- Finder 目录交互
-- GitHub Actions 使用真实 macOS runner 自动构建
-
-核心 QQ 空间采集与删除说说恢复引擎尽可能保持上游不变，让平台移植层更容易检查和维护。
+详见 [`docs/PRIVACY.md`](docs/PRIVACY.md)。
 
 ---
 
-## ⚠️ 第一次打开提示“无法验证开发者”
+## ⚠️ 第一次打开
 
-当前公开构建没有使用付费 Apple Developer 证书签名，因此 macOS 可能在第一次启动时拦截。
+从 **v4.0.0-mac.2** 开始，Apple Silicon 与 Intel 构建都会进行 **ad-hoc code signing**，并在 GitHub Actions 中执行 `codesign --verify --deep --strict` 校验。
 
-操作方法：
+因此不会再发布一个连 macOS 自身签名完整性检查都无法通过的包。
 
-**Finder → 应用程序 → 右键 QZoneArchiver → 打开 → 再次确认“打开”**
+不过这个社区版本目前还没有使用付费的 **Apple Developer ID + Apple notarization**，所以第一次启动时 Gatekeeper 仍可能提示“无法验证开发者”。这种情况下：
 
-或者在：
+**Finder → 应用程序 → 右键 QZoneArchiver → 打开 → 再确认打开**
+
+或者：
 
 **系统设置 → 隐私与安全性 → 仍要打开**
 
-这与应用是否收费无关，是 macOS Gatekeeper 对未签名第三方应用的标准提示。
+如果你看到的是“应用已损坏，应该移到废纸篓”，请确认下载的是 **v4.0.0-mac.2 或更新版本**，不要继续使用旧的 `mac.1` 包。
 
 ---
 
-## ❓ 常见问题
+## ❓ FAQ
 
 **真的能恢复所有删除的说说吗？**  
-不能。它依赖 QQ 空间仍保留的互动数据。曾有点赞、评论、回复等记录的内容成功机会更高。
+不能。恢复依赖 QQ 空间目前仍可访问的互动数据。
 
-**会读取别人的私密空间吗？**  
-不会绕过 QQ 空间本身的权限。请只备份你有权访问的账号与内容。
+**M1 / M2 / M3 / M4 能用吗？**  
+可以，下载 `arm64.dmg`。
 
-**免费吗？**  
-是。代码公开，Apache-2.0 许可。
+**会绕过别人的 QQ 空间权限吗？**  
+不会。工具只能使用当前登录账号本身有权访问的数据。
 
-**M1 Mac 能用吗？**  
-可以。Apple Silicon 使用原生 `arm64` 构建。
+**收费吗？**  
+不收费，代码公开，遵循 Apache-2.0。
 
-**为什么安装包比较大？**  
-桌面版基于 Electron，并包含离线档案浏览所需资源，因此体积会明显大于普通小工具。
-
-更多见 [`docs/FAQ.md`](docs/FAQ.md)。
+更多问题见 [`docs/FAQ.md`](docs/FAQ.md)。
 
 ---
 
-## 🛠️ 开发与构建
+## 🍎 macOS 版做了什么适配？
 
-本仓库不复制维护一份容易过时的 QQ API 引擎，而是固定到经过验证的上游版本，然后应用一个可审计的 macOS patch。
+上游 [`salt-fishes/qzone-archiver`](https://github.com/salt-fishes/qzone-archiver) v4.0.0 提供完整 Electron 桌面版，但官方桌面包只发布 Windows。
+
+本项目保留上游 QQ 空间采集、恢复与导出逻辑，并增加：
+
+- macOS `.dmg` / `.zip`
+- Apple Silicon `arm64`
+- Intel `x64`
+- ad-hoc code signing
+- 自动 `codesign` 完整性校验
+- macOS 原生菜单与快捷键
+- Dock / Finder 行为适配
+- GitHub Actions 自动构建与 Release
 
 ```text
 salt-fishes/qzone-archiver v4.0.0
               ↓
      apply-macos-port.mjs
               ↓
-     macOS Electron App
+       macOS adaptation
               ↓
-       arm64 / x64 DMG
+     code-sign + verify
+              ↓
+      arm64 / x64 DMG
 ```
 
-本地构建：
+---
+
+## 🛠️ 本地构建
 
 ```bash
 git clone https://github.com/salt-fishes/qzone-archiver.git upstream-qzone-archiver
@@ -190,7 +179,7 @@ npm install
 npm run dist:mac:arm64
 ```
 
-Intel：
+Intel Mac：
 
 ```bash
 npm run dist:mac:x64
@@ -198,9 +187,9 @@ npm run dist:mac:x64
 
 ---
 
-## 🙏 上游项目与开源许可
+## 🙏 上游与许可
 
-这个 macOS 版本基于：
+基于：
 
 - [`salt-fishes/qzone-archiver`](https://github.com/salt-fishes/qzone-archiver)
 - 上游版本：v4.0.0
@@ -219,6 +208,6 @@ npm run dist:mac:x64
 
 **让更多还在找旧 QQ 空间内容的人看到它。**
 
-[下载](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest) · [恢复原理](docs/RECOVERY.md) · [隐私](docs/PRIVACY.md) · [FAQ](docs/FAQ.md)
+[下载最新版](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest) · [恢复原理](docs/RECOVERY.md) · [隐私](docs/PRIVACY.md) · [FAQ](docs/FAQ.md)
 
 </div>
