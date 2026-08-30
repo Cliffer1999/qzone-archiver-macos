@@ -10,14 +10,18 @@
 
 [![macOS](https://img.shields.io/badge/macOS-12%2B-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases)
 [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-black?logo=apple)](https://github.com/Cliffer1999/qzone-archiver-macos/releases)
-[![Intel Mac](https://img.shields.io/badge/Intel%20Mac-supported-blue)](https://github.com/Cliffer1999/qzone-archiver-macos/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![Build](https://github.com/Cliffer1999/qzone-archiver-macos/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Cliffer1999/qzone-archiver-macos/actions/workflows/build-and-release.yml)
 
-## **[⬇️ 下载 macOS 版本](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)**
+### ⬇️ 直接下载
 
-**M1 / M2 / M3 / M4 用户下载 `arm64.dmg`**  
-Intel Mac 用户下载 `x64.dmg`
+[![Download Apple Silicon](https://img.shields.io/badge/Download-M1%20%2F%20M2%20%2F%20M3%20%2F%20M4-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-arm64.dmg)
+&nbsp;
+[![Download Intel Mac](https://img.shields.io/badge/Download-Intel%20Mac-1f6feb?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-x64.dmg)
+
+**不知道选哪个？** 2020 年以后大多数 Mac（M1 / M2 / M3 / M4）选左边。
+
+[查看全部版本与 ZIP 下载](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)
 
 </div>
 
@@ -75,10 +79,8 @@ QZone Archiver 尝试重建这条已删除说说
 
 ### 1. 下载
 
-进入 **[Releases](https://github.com/Cliffer1999/qzone-archiver-macos/releases/latest)**：
-
-- Apple Silicon（M1 / M2 / M3 / M4）：下载 `QZoneArchiver-*-mac-arm64.dmg`
-- Intel Mac：下载 `QZoneArchiver-*-mac-x64.dmg`
+- Apple Silicon（M1 / M2 / M3 / M4）：[`arm64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-arm64.dmg)
+- Intel Mac：[`x64.dmg`](https://github.com/Cliffer1999/qzone-archiver-macos/releases/download/v4.0.0-mac.1/QZoneArchiver-4.0.0-mac-x64.dmg)
 
 ### 2. 登录自己的 QQ 空间
 
