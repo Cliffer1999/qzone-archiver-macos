@@ -14,7 +14,7 @@ permissions:
 
 env:
   UPSTREAM_COMMIT: 63967a184b44ea3eaf339f0abac72bb5244c0a75
-  RELEASE_TAG: v4.0.0-mac.3
+  RELEASE_TAG: v4.0.0-mac.4
 
 jobs:
   build:
@@ -47,6 +47,9 @@ jobs:
 
       - name: Apply macOS compatibility layer
         run: node port/scripts/apply-macos-port.mjs upstream
+
+      - name: Apply deleted-post recovery fixes
+        run: node port/scripts/fix-recovery.mjs upstream
 
       - name: Install dependencies
         working-directory: upstream/desktop
@@ -109,9 +112,9 @@ jobs:
           gh release create "$RELEASE_TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "QZone Archiver for macOS v4.0.0-mac.3" \
+            --title "QZone Archiver for macOS v4.0.0-mac.4" \
             --latest \
-            --notes $'🍎 QZone Archiver for macOS\n\n本版本修复备份页进度条语义错误：上游每个子步骤都会单独上报 0–100%，旧界面却把它直接显示成整个备份进度，导致 100% 后又回到 0%。\n\n现在主进度条显示整体备份进度（只增不减），当前子步骤百分比单独显示；真正收到备份完成事件后才显示 100%。\n\n同时保留 mac.2 的 Apple Silicon ad-hoc code signing 与 codesign 完整性校验。\n\n### 下载哪个？\n- M1 / M2 / M3 / M4：下载文件名带 `arm64.dmg`\n- Intel Mac：下载文件名带 `x64.dmg`\n\n删除说说恢复仍属于实验性功能，恢复能力取决于 QQ 空间仍保留的互动数据。'
+            --notes $'🍎 QZone Archiver for macOS\n\n本版本重点修复“恢复已删除说说”的完整性和图片问题。\n\n### 修复内容\n- 移除错误的 1000 万条互动消息总数二分探测，不再出现 333334 页这种假进度。\n- 改为从第 1 页开始顺序向历史深处扫描，直到 QQ 接口真正返回空数据或重复页。\n- 一次响应如果包含多条 `<li>` 互动记录，现在会逐条解析；旧版只取第一条，会大量漏数据。\n- 遇到 QQ 风控/临时接口异常时，对同一页退避重试，不再像旧版一样第 8 页出错后直接放弃后面的历史。\n- 恢复结果会记录扫描到的最早互动日期，方便判断 QQ 服务器实际保留到了哪一年。\n- 恢复说说中的图片会加入本地下载队列，网页优先使用本地图片；即使某张旧图已被 QQ 清理，文字恢复仍会保留。\n- 保留 mac.3 的整体进度条修复与 mac.2 的 Apple Silicon code signing 修复。\n\n### 下载哪个？\n- M1 / M2 / M3 / M4：下载文件名带 `arm64.dmg`\n- Intel Mac：下载文件名带 `x64.dmg`\n\n注意：软件现在会尽可能完整扫描 QQ 仍提供的互动历史，但 QQ 服务器已经彻底清理的互动或媒体无法凭空恢复，因此不能保证一定覆盖账号全部 15 年历史。'
 
       - name: Upload DMG and ZIP to release
         env:
