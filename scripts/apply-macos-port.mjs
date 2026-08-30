@@ -31,6 +31,13 @@ function write(file, content) {
   console.log(`[mac-port] updated ${path.relative(upstreamRoot, file)}`);
 }
 
+function replaceOnceOrFail(source, needle, replacement, label) {
+  if (!source.includes(needle)) {
+    fail(`Could not locate patch marker: ${label}`);
+  }
+  return source.replace(needle, replacement);
+}
+
 if (!fs.existsSync(path.join(upstreamRoot, 'LICENSE'))) {
   fail(`Upstream LICENSE not found: ${upstreamRoot}`);
 }
@@ -139,11 +146,175 @@ if (windowsSource.includes(browserWindowMarker)) {
 }
 write(windowsFile, windowsSource);
 
-// 5. Bundle upstream licence and a clear derivative-work notice.
+// 5. Correct the desktop progress model.
+// Upstream StatusIndicator reports 0-100 for EACH sub-phase. The renderer
+// displayed that number as if it were the whole backup, producing 100 -> 0
+// jumps whenever the engine moved to the next phase. Keep the engine's phase
+// progress intact, but derive a monotonic overall estimate for the main bar.
+const backupStoreFile = path.join(desktopDir, 'src/renderer/src/stores/backup.ts');
+let backupStoreSource = read(backupStoreFile);
+
+const progressDecl = `export const progress = ref<{
+  module?: string; phase?: string; tip?: string; percent?: number;
+  extra?: { success?: number; failed?: number; skip?: number; elapsed?: number };
+}>({});`;
+
+const progressModel = `export const progress = ref<{
+  module?: string; phase?: string; tip?: string; percent?: number;
+  done?: number; total?: number; status?: string;
+  extra?: { success?: number; failed?: number; skip?: number; elapsed?: number };
+}>({});
+
+// MODIFIED FOR macOS PORT: separate whole-backup progress from sub-phase progress.
+export const overallPercent = ref(0);
+
+const MODULE_PHASE_ORDER: Record<string, string[]> = {
+  Messages: [
+    'Messages', 'Messages_Filter', 'Messages_Full_Content', 'Messages_More_Images',
+    'Messages_Comments', 'Messages_Like', 'Messages_Visitor', 'Messages_Images_Mime',
+    'Messages_Lbs_Info', 'Messages_Deleted', 'Messages_Export', 'Messages_Export_Other',
+    'Common_File', 'Backup_Save', 'Backup_Export',
+  ],
+  Blogs: [
+    'Blogs', 'Blogs_Content', 'Blogs_Comments', 'Blogs_Like', 'Blogs_Visitor',
+    'Blogs_Export', 'Blogs_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export',
+  ],
+  Diaries: [
+    'Diaries', 'Diaries_Content', 'Diaries_Comments', 'Diaries_Like', 'Diaries_Visitor',
+    'Diaries_Export', 'Diaries_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export',
+  ],
+  Photos: [
+    'Photos', 'Photos_Albums_Comments', 'Photos_Albums_Like', 'Photos_Albums_Visitor',
+    'Photos_Images', 'Photos_Images_Info', 'Photos_Images_Comments', 'Photos_Images_Like',
+    'Photos_Images_Mime', 'Photos_Export', 'Photos_Images_Export', 'Photos_Images_Export_Other',
+    'Common_File', 'Backup_Save', 'Backup_Export',
+  ],
+  Videos: ['Videos', 'Videos_Comments', 'Videos_Like', 'Videos_Export', 'Common_File', 'Backup_Save', 'Backup_Export'],
+  Boards: ['Boards', 'Boards_Images_Mime', 'Boards_Export', 'Boards_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export'],
+  Favorites: ['Favorites', 'Favorites_Export', 'Favorites_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export'],
+  Shares: ['Shares', 'Shares_Comments', 'Shares_Like', 'Shares_Visitor', 'Shares_Export', 'Shares_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export'],
+  Friends: ['Friends', 'Friends_Time', 'Friends_Access', 'Friends_Care', 'Friends_Export', 'Common_File', 'Backup_Save', 'Backup_Export'],
+  Visitors: ['Visitors', 'Visitors_Export', 'Visitors_Export_Other', 'Common_File', 'Backup_Save', 'Backup_Export'],
+};
+
+let activeProgressModule = '';
+let activePhaseFloor = 0;
+
+function resetOverallProgress() {
+  overallPercent.value = 0;
+  activeProgressModule = '';
+  activePhaseFloor = 0;
+}
+
+function updateOverallProgress(p: any) {
+  const modules = selectedModules.value;
+  if (!modules.length || !p?.module) return;
+  const moduleIndex = modules.indexOf(p.module);
+  if (moduleIndex < 0) return;
+
+  if (activeProgressModule !== p.module) {
+    activeProgressModule = p.module;
+    activePhaseFloor = 0;
+  }
+
+  const phases = MODULE_PHASE_ORDER[p.module] || [];
+  const phaseIndex = phases.indexOf(p.phase || '');
+  const phasePercent = Math.max(0, Math.min(100, Number(p.percent) || 0)) / 100;
+
+  if (phaseIndex >= 0 && phases.length) {
+    // Every indicator may independently reach 100%. Dividing by the known
+    // phase count prevents one short sub-step from completing the whole bar.
+    const phaseFraction = (phaseIndex + phasePercent) / phases.length;
+    activePhaseFloor = Math.max(activePhaseFloor, phaseFraction);
+  }
+
+  // 100% is reserved for the real backup:completed event.
+  const moduleFraction = Math.min(0.98, activePhaseFloor);
+  const globalFraction = (moduleIndex + moduleFraction) / Math.max(1, modules.length);
+  overallPercent.value = Math.max(
+    overallPercent.value,
+    Math.min(99, Math.floor(globalFraction * 100)),
+  );
+}
+
+function markModuleCompleted(module: string) {
+  const modules = selectedModules.value;
+  const moduleIndex = modules.indexOf(module);
+  if (moduleIndex < 0 || !modules.length) return;
+  const completedFraction = (moduleIndex + 1) / modules.length;
+  overallPercent.value = Math.max(overallPercent.value, Math.min(99, Math.floor(completedFraction * 100)));
+}`;
+backupStoreSource = replaceOnceOrFail(backupStoreSource, progressDecl, progressModel, 'backup progress declaration');
+
+backupStoreSource = replaceOnceOrFail(
+  backupStoreSource,
+  `  busy.value = true;\n  paused.value = false;\n  progress.value = { module: modules[0] || '', phase: '启动', percent: 0 };`,
+  `  resetOverallProgress();\n  busy.value = true;\n  paused.value = false;\n  progress.value = { module: modules[0] || '', phase: '启动', percent: 0 };`,
+  'startBackup progress reset',
+);
+
+backupStoreSource = replaceOnceOrFail(
+  backupStoreSource,
+  `    window.api.on('backup:progress', (p) => {\n      progress.value = p;\n    }),`,
+  `    window.api.on('backup:progress', (p) => {\n      progress.value = p;\n      updateOverallProgress(p);\n    }),`,
+  'backup progress listener',
+);
+
+backupStoreSource = replaceOnceOrFail(
+  backupStoreSource,
+  `    window.api.on('backup:module-done', (p) => {\n      pushLog('success', \`模块完成：\${MODULE_META[p.module]?.label || p.module}\`);\n    }),`,
+  `    window.api.on('backup:module-done', (p) => {\n      markModuleCompleted(p.module);\n      pushLog('success', \`模块完成：\${MODULE_META[p.module]?.label || p.module}\`);\n    }),`,
+  'module done listener',
+);
+
+backupStoreSource = replaceOnceOrFail(
+  backupStoreSource,
+  `    window.api.on('backup:completed', async () => {\n      busy.value = false;`,
+  `    window.api.on('backup:completed', async () => {\n      overallPercent.value = 100;\n      busy.value = false;`,
+  'backup completed listener',
+);
+
+backupStoreSource = replaceOnceOrFail(
+  backupStoreSource,
+  `    busy, paused, engineReady, engineFailed, retryEngine, progress, logs, elapsedSec, downloads,`,
+  `    busy, paused, engineReady, engineFailed, retryEngine, progress, overallPercent, logs, elapsedSec, downloads,`,
+  'backup store exports',
+);
+write(backupStoreFile, backupStoreSource);
+
+const backupViewFile = path.join(desktopDir, 'src/renderer/src/views/BackupView.vue');
+let backupViewSource = read(backupViewFile);
+backupViewSource = replaceOnceOrFail(
+  backupViewSource,
+  `  busy, paused, progress, elapsedSec, lastResult,`,
+  `  busy, paused, progress, overallPercent, elapsedSec, lastResult,`,
+  'BackupView store destructure',
+);
+backupViewSource = replaceOnceOrFail(
+  backupViewSource,
+  `            <span class="prog-percent">{{ progress.percent ?? 0 }}%</span>`,
+  `            <span class="prog-percent">整体进度 {{ overallPercent }}%</span>`,
+  'BackupView overall percent label',
+);
+backupViewSource = replaceOnceOrFail(
+  backupViewSource,
+  `            <div class="bar-fill" :style="{ width: (progress.percent ?? 0) + '%' }"></div>`,
+  `            <div class="bar-fill" :style="{ width: overallPercent + '%' }"></div>`,
+  'BackupView overall progress bar',
+);
+backupViewSource = replaceOnceOrFail(
+  backupViewSource,
+  `          <div class="prog-meta">\n            <span>成功 {{ progExtra.success ?? 0 }}</span>`,
+  `          <div class="prog-meta">\n            <span>当前步骤 {{ progress.percent ?? 0 }}%</span>\n            <span>成功 {{ progExtra.success ?? 0 }}</span>`,
+  'BackupView phase percent',
+);
+write(backupViewFile, backupViewSource);
+
+// 6. Bundle upstream licence and a clear derivative-work notice.
 fs.copyFileSync(path.join(upstreamRoot, 'LICENSE'), path.join(desktopDir, 'LICENSE-UPSTREAM.txt'));
 console.log('[mac-port] copied upstream Apache-2.0 licence');
 
-const notice = `QZoneArchiver macOS Port\n\nDerivative platform port of:\n  salt-fishes/qzone-archiver\n  https://github.com/salt-fishes/qzone-archiver\n\nPinned upstream commit:\n  63967a184b44ea3eaf339f0abac72bb5244c0a75 (v4.0.0)\n\nUpstream licence: Apache License 2.0.\n\nmacOS-specific modifications:\n- electron-builder DMG/ZIP targets for arm64 and x64\n- ad-hoc macOS code signing for distributable community builds\n- native macOS application menu\n- native macOS main-window title-bar behaviour\n- build and attribution metadata\n\nThe QQ Space collection, deleted-post recovery and export engine are retained\nfrom upstream rather than reimplemented in this port.\n`;
+const notice = `QZoneArchiver macOS Port\n\nDerivative platform port of:\n  salt-fishes/qzone-archiver\n  https://github.com/salt-fishes/qzone-archiver\n\nPinned upstream commit:\n  63967a184b44ea3eaf339f0abac72bb5244c0a75 (v4.0.0)\n\nUpstream licence: Apache License 2.0.\n\nmacOS-specific modifications:\n- electron-builder DMG/ZIP targets for arm64 and x64\n- ad-hoc macOS code signing for distributable community builds\n- native macOS application menu\n- native macOS main-window title-bar behaviour\n- corrected aggregate backup progress display\n- build and attribution metadata\n\nThe QQ Space collection, deleted-post recovery and export engine are retained\nfrom upstream rather than reimplemented in this port.\n`;
 write(path.join(desktopDir, 'NOTICE-MACOS-PORT.txt'), notice);
 
 console.log('[mac-port] macOS port applied successfully');
