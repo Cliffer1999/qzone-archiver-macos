@@ -26,7 +26,15 @@ macOS 移植层没有自己的服务器。登录发生在内嵌 QQ 空间页面�
 
 ## 为什么提示“无法验证开发者”？
 
-公开构建目前没有使用 Apple Developer 证书进行签名和 notarization。Finder 中右键 App → 打开，或前往“系统设置 → 隐私与安全性”允许打开。
+从 `v4.0.0-mac.2` 开始，公开构建已经使用 ad-hoc code signing，并在 GitHub Actions 中执行 `codesign --verify --deep --strict` 校验。
+
+但项目目前没有使用付费 Apple Developer ID 进行 notarization，因此 Gatekeeper 仍可能在第一次启动时提示开发者无法验证。可在 Finder 中右键 App → 打开，或前往“系统设置 → 隐私与安全性 → 仍要打开”。
+
+## 为什么提示“应用已损坏”？
+
+请先确认下载的是 `v4.0.0-mac.2` 或更新版本。旧的 `mac.1` Apple Silicon 包存在签名问题，已经被新版替代。
+
+如果新版仍出现同样提示，请在 GitHub Issues 中附上 macOS 版本、Mac 芯片型号和错误截图，方便进一步定位。
 
 ## 为什么安装包这么大？
 
