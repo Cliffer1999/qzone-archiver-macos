@@ -1,0 +1,29 @@
+QZone Archiver for macOS
+Copyright 2026 contributors
+
+This project is a macOS platform port of:
+
+  salt-fishes/qzone-archiver
+  https://github.com/salt-fishes/qzone-archiver
+
+Pinned upstream source:
+
+  version: v4.0.0
+  commit: 63967a184b44ea3eaf339f0abac72bb5244c0a75
+  license: Apache License 2.0
+
+The upstream project itself is based on ShunCai/QZoneExport.
+
+macOS-specific work in this repository includes:
+
+- electron-builder DMG / ZIP targets
+- Apple Silicon arm64 packaging
+- Intel x64 packaging
+- native macOS application menu behaviour
+- macOS title-bar / window behaviour
+- automated macOS builds and release packaging
+- macOS user documentation
+
+The QQ Space collection, export, archive viewer and deleted-post recovery engine are retained from upstream rather than claimed as original work of this port.
+
+Modified upstream files are marked by the macOS patcher where applicable, consistent with Apache License 2.0 redistribution requirements.
