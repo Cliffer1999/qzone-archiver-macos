@@ -14,7 +14,7 @@ permissions:
 
 env:
   UPSTREAM_COMMIT: 63967a184b44ea3eaf339f0abac72bb5244c0a75
-  RELEASE_TAG: v4.0.0-mac.1
+  RELEASE_TAG: v4.0.0-mac.2
 
 jobs:
   build:
@@ -26,9 +26,6 @@ jobs:
         arch:
           - arm64
           - x64
-
-    env:
-      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
 
     steps:
       - name: Checkout macOS port
@@ -63,6 +60,18 @@ jobs:
         working-directory: upstream/desktop
         run: npx electron-builder --mac --${{ matrix.arch }}
 
+      - name: Verify application code signature
+        working-directory: upstream/desktop
+        run: |
+          APP_PATH="$(find release -maxdepth 2 -type d -name 'QZoneArchiver.app' -print -quit)"
+          if [ -z "$APP_PATH" ]; then
+            echo 'QZoneArchiver.app was not produced'
+            exit 1
+          fi
+          echo "Verifying $APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          codesign -dv --verbose=4 "$APP_PATH" 2>&1
+
       - name: List packages
         working-directory: upstream/desktop
         run: find release -maxdepth 2 -type f -print
@@ -93,18 +102,16 @@ jobs:
       - name: Show release files
         run: find release-assets -maxdepth 1 -type f -print
 
-      - name: Create release if needed
+      - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$RELEASE_TAG" \
-              --repo "$GITHUB_REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "QZone Archiver for macOS v4.0.0-mac.1" \
-              --latest \
-              --notes $'🍎 QZone Archiver for macOS\n\n免费、开源的 QQ 空间本地备份与已删除说说恢复工具。\n\n### 下载哪个？\n- M1 / M2 / M3 / M4：下载文件名带 `arm64.dmg`\n- Intel Mac：下载文件名带 `x64.dmg`\n\n### 提醒\n当前构建未使用 Apple Developer 证书签名。首次启动如被 Gatekeeper 阻止，请在 Finder 中右键 App → 打开。\n\n删除说说恢复依赖 QQ 空间仍然保留的点赞、评论等互动记录，并非所有已删除内容都能恢复。'
-          fi
+          gh release create "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "QZone Archiver for macOS v4.0.0-mac.2" \
+            --latest \
+            --notes $'🍎 QZone Archiver for macOS\n\n修复 Apple Silicon 上可能出现的“应用已损坏，无法打开”问题。此版本对生成的 macOS App 使用 ad-hoc code signing，并在 CI 中执行 codesign 完整性校验。\n\n### 下载哪个？\n- M1 / M2 / M3 / M4：下载文件名带 `arm64.dmg`\n- Intel Mac：下载文件名带 `x64.dmg`\n\n### 第一次启动\n本项目仍未使用付费 Apple Developer ID 进行公证，因此 Gatekeeper 可能提示开发者无法验证。请在 Finder 中右键 App → 打开，或前往系统设置 → 隐私与安全性 → 仍要打开。\n\n删除说说恢复依赖 QQ 空间仍然保留的点赞、评论等互动记录，并非所有已删除内容都能恢复。'
 
       - name: Upload DMG and ZIP to release
         env:
