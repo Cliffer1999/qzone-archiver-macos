@@ -51,6 +51,9 @@ pkg.scripts = {
 write(packageFile, `${JSON.stringify(pkg, null, 2)}\n`);
 
 // 2. Replace Windows-only builder config with macOS DMG/ZIP targets.
+// Apple Silicon executables must have a valid code signature. We use an
+// ad-hoc signature (identity "-") so the public build launches correctly
+// without embedding a private Apple Developer certificate in CI.
 const builderFile = path.join(desktopDir, 'electron-builder.yml');
 const builderConfig = `# MODIFIED FOR macOS PORT by Cliffer1999
 # Based on salt-fishes/qzone-archiver v4.0.0 (Apache-2.0)
@@ -76,7 +79,9 @@ files:
 
 mac:
   category: public.app-category.utilities
-  identity: null
+  # Ad-hoc sign the app. This is required for reliable Apple Silicon launch
+  # and avoids the invalid/unsigned bundle that macOS may label "damaged".
+  identity: '-'
   hardenedRuntime: false
   gatekeeperAssess: false
   target:
@@ -138,7 +143,7 @@ write(windowsFile, windowsSource);
 fs.copyFileSync(path.join(upstreamRoot, 'LICENSE'), path.join(desktopDir, 'LICENSE-UPSTREAM.txt'));
 console.log('[mac-port] copied upstream Apache-2.0 licence');
 
-const notice = `QZoneArchiver macOS Port\n\nDerivative platform port of:\n  salt-fishes/qzone-archiver\n  https://github.com/salt-fishes/qzone-archiver\n\nPinned upstream commit:\n  63967a184b44ea3eaf339f0abac72bb5244c0a75 (v4.0.0)\n\nUpstream licence: Apache License 2.0.\n\nmacOS-specific modifications:\n- electron-builder DMG/ZIP targets for arm64 and x64\n- native macOS application menu\n- native macOS main-window title-bar behaviour\n- build and attribution metadata\n\nThe QQ Space collection, deleted-post recovery and export engine are retained\nfrom upstream rather than reimplemented in this port.\n`;
+const notice = `QZoneArchiver macOS Port\n\nDerivative platform port of:\n  salt-fishes/qzone-archiver\n  https://github.com/salt-fishes/qzone-archiver\n\nPinned upstream commit:\n  63967a184b44ea3eaf339f0abac72bb5244c0a75 (v4.0.0)\n\nUpstream licence: Apache License 2.0.\n\nmacOS-specific modifications:\n- electron-builder DMG/ZIP targets for arm64 and x64\n- ad-hoc macOS code signing for distributable community builds\n- native macOS application menu\n- native macOS main-window title-bar behaviour\n- build and attribution metadata\n\nThe QQ Space collection, deleted-post recovery and export engine are retained\nfrom upstream rather than reimplemented in this port.\n`;
 write(path.join(desktopDir, 'NOTICE-MACOS-PORT.txt'), notice);
 
 console.log('[mac-port] macOS port applied successfully');
